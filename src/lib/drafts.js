@@ -9,7 +9,7 @@
  */
 import { load, save } from './storage';
 
-const KEY = 'notes-with-mcp:drafts';
+const KEY = 'commonnotes:drafts';
 
 export const allDrafts = () => load(KEY, {});
 export const getDraft = (id) => allDrafts()[id] || null;

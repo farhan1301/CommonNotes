@@ -1,6 +1,6 @@
 import { load, save } from './storage';
 
-const THEME_KEY = 'notes-with-mcp:theme';
+const THEME_KEY = 'commonnotes:theme';
 export const THEMES = { system: 'System', light: 'Light', dark: 'Dark' };
 
 const media = () => window.matchMedia?.('(prefers-color-scheme: dark)');

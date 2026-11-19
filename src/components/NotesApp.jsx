@@ -13,11 +13,11 @@ import Editor from './Editor';
 import Settings from './Settings';
 import TrashFooter from './TrashFooter';
 
-const LIST_KEY = 'notes-with-mcp:list';
-const VIEW_KEY = 'notes-with-mcp:view';
-const SORT_KEY = 'notes-with-mcp:sort';
-const LAYOUT_KEY = 'notes-with-mcp:layout';
-const DISPLAY_KEY = 'notes-with-mcp:display';
+const LIST_KEY = 'commonnotes:list';
+const VIEW_KEY = 'commonnotes:view';
+const SORT_KEY = 'commonnotes:sort';
+const LAYOUT_KEY = 'commonnotes:layout';
+const DISPLAY_KEY = 'commonnotes:display';
 const DEFAULT_DISPLAY = { layout: 'list', previews: true }; // layout: list | grid
 const DEFAULT_LAYOUT = { sidebar: 240, list: 320, sidebarHidden: false, listHidden: false };
 const LIMITS = { sidebar: [180, 420], list: [240, 560] };

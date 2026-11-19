@@ -1,6 +1,6 @@
 {
-  "name": "Notes",
-  "short_name": "Notes",
+  "name": "CommonNotes",
+  "short_name": "CommonNotes",
   "description": "Private notes connected to your AI agents",
   "start_url": "/",
   "display": "standalone",

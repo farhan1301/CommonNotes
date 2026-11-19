@@ -11,7 +11,7 @@ export const supabase = url && key
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      storageKey: 'notes-with-mcp-auth',
+      storageKey: 'commonnotes-auth',
     },
   })
   : null;

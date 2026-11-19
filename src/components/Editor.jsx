@@ -17,7 +17,7 @@ import HistoryDialog from './HistoryDialog';
 import FormatMenu from './FormatMenu';
 import { useDialog } from './Dialog';
 
-const CACHE_KEY = 'notes-with-mcp:content';
+const CACHE_KEY = 'commonnotes:content';
 
 /** Recently opened notes, so they can be read without a connection. */
 const cacheNote = (row) => {

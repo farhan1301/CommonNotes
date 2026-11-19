@@ -8,16 +8,28 @@
     <meta name="description" content="Your notes. Your data. Connected to your AI agents." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Notes" />
+    <meta name="apple-mobile-web-app-title" content="CommonNotes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <title>Notes with MCP</title>
+    <title>CommonNotes</title>
     <script>
+      // One-time move of settings, drafts and sign-in saved under the old name (Notes with MCP).
+      try {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+        keys.forEach(function (k) {
+          if (k && k.indexOf('notes-with-mcp') === 0) {
+            var nk = 'commonnotes' + k.slice('notes-with-mcp'.length);
+            if (localStorage.getItem(nk) === null) localStorage.setItem(nk, localStorage.getItem(k));
+            localStorage.removeItem(k);
+          }
+        });
+      } catch (e) {}
       // Apply the saved theme before first paint (src/lib/theme.js keeps it in sync).
       try {
-        var t = JSON.parse(localStorage.getItem('notes-with-mcp:theme') || '"system"');
+        var t = JSON.parse(localStorage.getItem('commonnotes:theme') || '"system"');
         if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
       } catch (e) {}
     </script>
