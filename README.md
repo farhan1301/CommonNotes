@@ -1,4 +1,4 @@
-# Notes with MCP
+# CommonNotes
 
 **Your notes. Your data. Connected to your AI agents.**
 
@@ -6,21 +6,21 @@ An Apple Notes–inspired notes app with a built-in [Model Context Protocol](htt
 
 Deploy a private copy in **your own Vercel and Supabase accounts**. Your notes stay in your database; this repository contains the application, not a shared notes service.
 
-![Notes with MCP showing folders, notes, and the editor](docs/screenshot.png)
+![CommonNotes showing folders, notes, and the editor](docs/screenshot.png)
 
 *Example workspace with fictional notes.*
 
 ## Demo videos
 
-[![Notes with MCP — demo video preview](https://github.com/farhan1301/notes-with-mcp/releases/download/demo-videos/notes-with-mcp-poster.jpg)](https://github.com/farhan1301/notes-with-mcp/releases/tag/demo-videos)
+[![CommonNotes — demo video preview](https://github.com/farhan1301/CommonNotes/releases/download/demo-videos/notes-with-mcp-poster.jpg)](https://github.com/farhan1301/CommonNotes/releases/tag/demo-videos)
 
-**[60-second overview (MP4)](https://github.com/farhan1301/notes-with-mcp/releases/download/demo-videos/notes-with-mcp-60s.mp4)** · **[2-minute walkthrough (MP4)](https://github.com/farhan1301/notes-with-mcp/releases/download/demo-videos/notes-with-mcp-walkthrough-120s.mp4)**
+**[60-second overview (MP4)](https://github.com/farhan1301/CommonNotes/releases/download/demo-videos/notes-with-mcp-60s.mp4)** · **[2-minute walkthrough (MP4)](https://github.com/farhan1301/CommonNotes/releases/download/demo-videos/notes-with-mcp-walkthrough-120s.mp4)**
 
 ## Install with your coding agent
 
 Give Codex, Claude Code, or another coding agent this prompt:
 
-> Install https://github.com/farhan1301/notes-with-mcp for me. Read INSTALL.md and follow it to set up a private, single-owner instance in my own Supabase and Vercel accounts using the free personal-use tiers. Handle the setup and verification you can, and guide me through account sign-in or steps that need my input. Do not purchase anything or modify an existing project.
+> Install https://github.com/farhan1301/CommonNotes for me. Read INSTALL.md and follow it to set up a private, single-owner instance in my own Supabase and Vercel accounts using the free personal-use tiers. Handle the setup and verification you can, and guide me through account sign-in or steps that need my input. Do not purchase anything or modify an existing project.
 
 **[Installation guide →](INSTALL.md)** · **[Connect your agents →](docs/agents.md)** · **[Back up your data →](docs/data.md)**
 
@@ -28,7 +28,7 @@ You will need accounts with both providers. Account login, choosing the owner, a
 
 ## A notes app you can use every day
 
-- **Familiar layout:** resizable folders, notes, and editor columns; list or gallery; pins; date grouping; light, dark, or system appearance.
+- **Familiar layout:** resizable folders, notes, and editor columns; nested folders you can expand or collapse all at once; list or gallery; pins; date grouping; light, dark, or system appearance.
 - **Write naturally:** plain text or Markdown, formatting controls, headings, lists, checklists, tables, and autosave. Drafts stay on the device during a connection interruption and sync when you reconnect.
 - **Keep images with your notes:** paste, drag, or upload photos and screenshots to private storage. Agents can view supported images and add images using base64; URL downloads are an optional administrator setting.
 - **Find things:** keyword search, tags, and optional semantic search using Supabase's built-in embedding model.
