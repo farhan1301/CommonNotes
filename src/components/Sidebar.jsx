@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Folder, FolderPlus, Inbox, LogOut, Monitor, Moon, MoreHorizontal, NotebookText, Settings, Sun, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronsDownUp, ChevronsUpDown, Folder, FolderPlus, Inbox, LogOut, Monitor, Moon, MoreHorizontal, NotebookText, Settings, Sun, Trash2 } from 'lucide-react';
 import { flattenTree, subtreeIds } from '../lib/folders';
 import { load, save } from '../lib/storage';
 import { getTheme, setTheme, THEMES } from '../lib/theme';
 import { useDialog } from './Dialog';
 
-const COLLAPSED_KEY = 'notes-with-mcp:collapsed';
+const COLLAPSED_KEY = 'commonnotes:collapsed';
 const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon };
+const headerButton = 'rounded-lg p-2 text-amber-600 hover:bg-stone-200/60 disabled:opacity-40 disabled:hover:bg-transparent dark:text-amber-400 dark:hover:bg-neutral-800';
 
 const Row = ({ active, icon: Icon, label, count, depth = 0, onClick, toggle, menu }) => (
   <div
@@ -38,12 +39,21 @@ export default function Sidebar({ folders, notes, view, onSelect, onFolderAction
     setThemeState(choice);
   };
 
-  const toggle = (id) => {
-    const next = new Set(collapsed);
-    if (next.has(id)) next.delete(id); else next.add(id);
+  const setCollapsedSaved = (next) => {
     setCollapsed(next);
     save(COLLAPSED_KEY, [...next]);
   };
+
+  const toggle = (id) => {
+    const next = new Set(collapsed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setCollapsedSaved(next);
+  };
+
+  // Folders that have subfolders, for Expand all / Collapse all.
+  const parents = flattenTree(folders).filter((r) => r.hasChildren).map((r) => r.folder.id);
+  const allCollapsed = parents.every((id) => collapsed.has(id));
+  const allExpanded = parents.every((id) => !collapsed.has(id));
 
   // Hide folders under a collapsed parent.
   const rows = [];
@@ -96,9 +106,21 @@ export default function Sidebar({ folders, notes, view, onSelect, onFolderAction
     <nav className="flex h-full flex-col">
       <div className="flex items-center justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
         <h1 className="text-2xl font-bold tracking-tight">Folders</h1>
-        <button type="button" onClick={newFolder} title="New folder" className="rounded-lg p-2 text-amber-600 hover:bg-stone-200/60 dark:text-amber-400 dark:hover:bg-neutral-800">
-          <FolderPlus size={20} />
-        </button>
+        <div className="flex items-center">
+          {parents.length > 0 && (
+            <>
+              <button type="button" onClick={() => setCollapsedSaved(new Set())} disabled={allExpanded} title="Expand all folders" aria-label="Expand all folders" className={headerButton}>
+                <ChevronsUpDown size={19} />
+              </button>
+              <button type="button" onClick={() => setCollapsedSaved(new Set(parents))} disabled={allCollapsed} title="Collapse all folders" aria-label="Collapse all folders" className={headerButton}>
+                <ChevronsDownUp size={19} />
+              </button>
+            </>
+          )}
+          <button type="button" onClick={newFolder} title="New folder" className={headerButton}>
+            <FolderPlus size={20} />
+          </button>
+        </div>
       </div>
       <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
         <Row icon={NotebookText} label="All notes" count={live.length} active={view.kind === 'all'} onClick={() => onSelect({ kind: 'all' })} />
