@@ -1340,7 +1340,12 @@ begin
           rtrim(content, E'\n ') || case when btrim(content) = '' then '' else E'\n\n' end || v_text
       end
     where id = v_id
+      and (v_key.access is distinct from 'inbox' or folder_id is null)
     returning * into v_note;
+    if not found then
+      raise exception 'This key can only change notes that are still in the Inbox, and this one was just filed.'
+        using errcode = '42501';
+    end if;
     v_summary := format('Added %s characters to "%s"', length(v_text), v_note.title);
 
   when 'edit_note' then
@@ -1365,7 +1370,12 @@ begin
     end if;
     update notes set content = replace(content, v_old, coalesce(a ->> 'new_text', ''))
     where id = v_id
+      and (v_key.access is distinct from 'inbox' or folder_id is null)
     returning * into v_note;
+    if not found then
+      raise exception 'This key can only change notes that are still in the Inbox, and this one was just filed.'
+        using errcode = '42501';
+    end if;
     v_summary := format('Edited "%s" (%s replacement%s)', v_note.title, v_count, case when v_count = 1 then '' else 's' end);
 
   when 'replace_note' then
