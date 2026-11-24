@@ -78,7 +78,7 @@ const blockComponents = Object.fromEntries(BLOCK_TAGS.map((tag) => [tag, withLin
 /**
  * Renders a note's Markdown (GitHub flavour: tables, task lists, strikethrough,
  * autolinks). Single line breaks are kept, as dictated text expects. Ticking a checkbox
- * calls onToggleTask(line) with the 1-based source line.
+ * calls onToggleTask(line, column) with the list item's 1-based source position.
  */
 export default function Markdown({ content, onToggleTask }) {
   const components = {
@@ -89,6 +89,7 @@ export default function Markdown({ content, onToggleTask }) {
     li: ({ node, className, children, ...props }) => {
       const box = className?.includes('task-list-item') ? findCheckbox(node) : null;
       const line = node.position?.start.line;
+      const column = node.position?.start.column;
       if (!box) return <li className={className} data-line={line} {...props}>{children}</li>;
       return (
         <li className="task-list-item -ml-5 flex list-none items-start gap-2" data-line={line} {...props}>
@@ -96,7 +97,7 @@ export default function Markdown({ content, onToggleTask }) {
             type="checkbox"
             checked={Boolean(box.properties?.checked)}
             disabled={!onToggleTask || !line}
-            onChange={() => onToggleTask(line)}
+            onChange={() => onToggleTask(line, column)}
             className="mt-[0.45em] h-4 w-4 shrink-0 accent-amber-500"
           />
           <div className={box.properties?.checked ? 'text-stone-400 line-through' : ''}>{children}</div>

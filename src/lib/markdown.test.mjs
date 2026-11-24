@@ -12,6 +12,13 @@ test('toggleTaskLine ticks and unticks only task lines', () => {
   assert.equal(toggleTaskLine(md, 99), md);
 });
 
+test('toggleTaskLine uses the list item column for quoted and nested tasks', () => {
+  const md = '> - [ ] First\n>   - [x] Second\n\n- - [ ] Third';
+  assert.equal(toggleTaskLine(md, 1, 3), md.replace('[ ] First', '[x] First'));
+  assert.equal(toggleTaskLine(md, 2, 5), md.replace('[x] Second', '[ ] Second'));
+  assert.equal(toggleTaskLine(md, 4, 3), md.replace('[ ] Third', '[x] Third'));
+});
+
 test('splitHighlights marks **bold** parts', () => {
   assert.deepEqual(splitHighlights('buy **milk** now'), [
     { text: 'buy ', bold: false }, { text: 'milk', bold: true }, { text: ' now', bold: false },

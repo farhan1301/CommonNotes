@@ -639,7 +639,7 @@ export default function Editor({
                   {/* An automatic title is the note's first line, which is already shown. */}
                   {(title.trim() || !content.trim()) && <h1 data-title className="mb-3 text-2xl font-bold">{shownTitle || 'Untitled'}</h1>}
                   {content.trim()
-                    ? <Markdown content={content} onToggleTask={inTrash ? null : (line) => edit(title, toggleTaskLine(content, line))} />
+                    ? <Markdown content={content} onToggleTask={inTrash ? null : (line, column) => edit(title, toggleTaskLine(content, line, column))} />
                     : <p className="text-stone-400">Empty note. Click to write.</p>}
                 </div>
               )}
