@@ -46,3 +46,11 @@ export const subtreeIds = (folders, id) => {
   }
   return ids;
 };
+
+/** Select notes for a folder view, including local drafts supplied by the caller. */
+export const notesInFolder = (folders, notes, folderId, includeSubfolders = false) => {
+  if (!includeSubfolders) return notes.filter((n) => n.folder_id === folderId);
+  if (!folders.some((f) => f.id === folderId)) return [];
+  const ids = subtreeIds(folders, folderId);
+  return notes.filter((n) => ids.has(n.folder_id));
+};

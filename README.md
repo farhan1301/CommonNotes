@@ -32,6 +32,7 @@ You will need accounts with both providers. Account login, choosing the owner, a
 - **Write naturally:** plain text or Markdown, formatting controls, headings, lists, checklists, tables, and autosave. Drafts stay on the device during a connection interruption and sync when you reconnect.
 - **Keep images with your notes:** paste, drag, or upload photos and screenshots to private storage. Agents can view supported images and add images using base64; URL downloads are an optional administrator setting.
 - **Find things:** keyword search, tags, and optional semantic search using Supabase's built-in embedding model.
+  Choose **Browse with subfolders** from a folder’s menu to list and search notes throughout that folder.
 - **Recover changes:** note version history, conflict detection, note Trash, and a 30-day image Trash.
 - **Use it on your phone:** add the web app to your home screen. This is a web app/PWA, not a native Apple Notes client.
 

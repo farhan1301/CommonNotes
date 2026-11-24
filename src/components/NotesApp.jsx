@@ -3,7 +3,7 @@ import { NotebookPen, SquarePen, X } from 'lucide-react';
 import { supabase, notesApi, isNetworkError, NOTE_META } from '../lib/supabase';
 import { allDrafts, isEmptyDraft, removeDraft } from '../lib/drafts';
 import { subscribe, syncNow } from '../lib/sync';
-import { flattenTree, folderPath } from '../lib/folders';
+import { flattenTree, folderPath, notesInFolder } from '../lib/folders';
 import { DEFAULT_SORT, SORTS, sortNotes } from '../lib/sorting';
 import { load, save } from '../lib/storage';
 import { useDialog } from './Dialog';
@@ -83,7 +83,7 @@ export default function NotesApp() {
   const [layout, setLayout] = useState(() => ({ ...DEFAULT_LAYOUT, ...load(LAYOUT_KEY, {}) }));
   const [display, setDisplay] = useState(() => ({ ...DEFAULT_DISPLAY, ...load(DISPLAY_KEY, {}) }));
   const [toast, setToast] = useState(null); // { message, undo? }
-  const latestQuery = useRef('');
+  const searchFolderId = view.kind === 'folder' && view.includeSubfolders ? view.folderId : null;
   const toastTimer = useRef(null);
 
   const updateLayout = useCallback((patch) => {
@@ -163,6 +163,7 @@ export default function NotesApp() {
   const changeView = (next) => {
     setView(next);
     save(VIEW_KEY, next);
+    if (next.includeSubfolders) setSelected(null);
     setQuery('');
     setPane('list');
   };
@@ -180,43 +181,50 @@ export default function NotesApp() {
     else {
       const live = all.filter((n) => !n.deleted_at);
       if (view.kind === 'inbox') list = live.filter((n) => !n.folder_id);
-      else if (view.kind === 'folder') list = live.filter((n) => n.folder_id === view.folderId);
+      else if (view.kind === 'folder') list = notesInFolder(folders, live, view.folderId, view.includeSubfolders);
       else list = live;
     }
     return sortNotes(list, sort.by);
-  }, [notes, view, drafts, sort.by]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [folders, notes, view, drafts, sort.by]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Search: keywords + meaning through the notes-search Edge Function,
   // falling back to keyword search in the database.
   useEffect(() => {
     const q = query.trim();
-    latestQuery.current = q;
+    setResults([]);
+    setSearchNote('');
     if (!q) {
-      setResults([]);
       setSearching(false);
       return undefined;
     }
     setSearching(true);
+    let active = true;
+    const args = { query: q, limit: 30 };
+    if (searchFolderId) args.folder = searchFolderId;
     const timer = setTimeout(async () => {
       let found = [];
       let note = '';
-      const { data, error } = await supabase.functions.invoke('notes-search', { body: { query: q, limit: 30 } });
+      const { data, error } = await supabase.functions.invoke('notes-search', { body: args });
+      if (!active) return;
       if (!error && data?.results) found = data.results;
       else {
         try {
-          found = (await notesApi('search_notes', { query: q, limit: 30 })).results;
+          found = (await notesApi('search_notes', args)).results;
           note = 'Showing keyword matches only.';
         } catch (fallbackError) {
           note = isNetworkError(fallbackError) ? 'Search needs a connection.' : fallbackError.message;
         }
       }
-      if (latestQuery.current !== q) return;
+      if (!active) return;
       setResults(found);
       setSearchNote(note);
       setSearching(false);
     }, 350);
-    return () => clearTimeout(timer);
-  }, [query]);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [query, searchFolderId]);
 
   const openNote = (id) => {
     setSelected({ id });
@@ -407,16 +415,17 @@ export default function NotesApp() {
             className={`${pane === 'list' ? 'flex' : 'hidden'} ${listClass} relative w-full flex-col border-r ${column}`}
           >
             <NoteList
-              title={title}
+              title={searchFolderId ? `${title} and subfolders` : title}
               notes={visible}
               selectedId={selected?.id}
-              showFolder={view.kind === 'all' || view.kind === 'trash'}
+              showFolder={view.kind === 'all' || view.kind === 'trash' || Boolean(searchFolderId)}
               folderPathOf={folderPathOf}
               onOpen={openNote}
               onNew={newNote}
               onBack={() => setPane('nav')}
               canCreate={view.kind !== 'trash'}
               query={query}
+              searchPlaceholder={searchFolderId ? 'Search this folder and subfolders' : 'Search all notes'}
               onQuery={setQuery}
               results={results}
               searching={searching}
