@@ -7,6 +7,8 @@ export const SORTS = {
 
 export const DEFAULT_SORT = { by: 'updated', group: true };
 
+export const displayDateField = (by) => by === 'created' ? 'created_at' : 'updated_at';
+
 /** Pinned first, then by the chosen field (newest first, or A–Z for titles). */
 export const sortNotes = (notes, by = 'updated') => {
   const field = SORTS[by]?.field || 'updated_at';
