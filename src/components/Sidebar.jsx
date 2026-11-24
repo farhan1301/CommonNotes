@@ -67,13 +67,17 @@ export default function Sidebar({ folders, notes, view, onSelect, onFolderAction
 
   const folderMenu = async (folder, path) => {
     const blocked = subtreeIds(folders, folder.id);
+    const browsingSubfolders = view.kind === 'folder' && view.folderId === folder.id && view.includeSubfolders;
     const choice = await dialog.choose(path, [
+      { value: 'browse', label: browsingSubfolders ? 'Browse this folder only' : 'Browse with subfolders' },
       { value: 'new', label: 'New folder inside' },
       { value: 'rename', label: 'Rename' },
       { value: 'move', label: 'Move to…' },
       { value: 'delete', label: 'Delete' },
     ]);
-    if (choice === 'new') {
+    if (choice === 'browse') {
+      onSelect({ kind: 'folder', folderId: folder.id, includeSubfolders: !browsingSubfolders });
+    } else if (choice === 'new') {
       const name = await dialog.prompt(`New folder in ${path}`, '', 'Create');
       if (name) onFolderAction('create_folder', { path: `${path}/${name.replaceAll('/', '-')}` });
     } else if (choice === 'rename') {

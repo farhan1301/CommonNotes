@@ -167,7 +167,7 @@ const sections = (notes, sort) => {
 
 export default function NoteList({
   title, notes, selectedId, showFolder, folderPathOf, onOpen, onNew, onBack, canCreate,
-  query, onQuery, results, searching, searchNote, unsavedIds, footer,
+  query, onQuery, results, searching, searchNote, searchPlaceholder, unsavedIds, footer,
   sort, display, onViewMenu, onToggleLayout, sidebarHidden, onToggleSidebar, onMenu, onPin, onTrash,
 }) {
   const searchMode = query.trim().length > 0;
@@ -203,7 +203,8 @@ export default function NoteList({
           <input
             value={query}
             onChange={(e) => onQuery(e.target.value)}
-            placeholder="Search all notes"
+            placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder}
             className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400"
             type="search"
             enterKeyHint="search"
