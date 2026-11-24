@@ -1,11 +1,14 @@
 const TASK = /^(\s*(?:[-*+]|\d+[.)])\s+)\[([ xX])\]/;
 
-/** Ticks or unticks the "- [ ]" checkbox on a 1-based line of Markdown. */
-export const toggleTaskLine = (content, line) => {
+/** Ticks or unticks the task list item at a 1-based Markdown line and column. */
+export const toggleTaskLine = (content, line, column = 1) => {
   const lines = content.split('\n');
   const index = line - 1;
-  if (index < 0 || index >= lines.length || !TASK.test(lines[index])) return content;
-  lines[index] = lines[index].replace(TASK, (_, prefix, mark) => `${prefix}[${mark === ' ' ? 'x' : ' '}]`);
+  const source = lines[index];
+  if (source === undefined) return content;
+  const start = Math.max(0, column - 1);
+  const task = source.slice(start).replace(TASK, (_, prefix, mark) => `${prefix}[${mark === ' ' ? 'x' : ' '}]`);
+  lines[index] = source.slice(0, start) + task;
   return lines.join('\n');
 };
 
