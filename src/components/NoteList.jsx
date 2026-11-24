@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, FileText, LayoutGrid, List, Loader2, PanelLeftClose, PanelLeftOpen, Pin, PinOff, Search, SlidersHorizontal, SquarePen, Trash2, X } from 'lucide-react';
 import { splitHighlights } from '../lib/markdown';
-import { dateGroup, SORTS } from '../lib/sorting';
+import { dateGroup, displayDateField, SORTS } from '../lib/sorting';
 
 const formatDate = (iso) => {
   const date = new Date(iso);
@@ -173,7 +173,7 @@ export default function NoteList({
   const searchMode = query.trim().length > 0;
   const grid = display.layout === 'grid';
   const Item = grid ? NoteCard : NoteRow;
-  const dateField = SORTS[sort.by]?.field || 'updated_at';
+  const dateField = displayDateField(sort.by);
   return (
     <section className="flex h-full flex-col">
       <header className="px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">

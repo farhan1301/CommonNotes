@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dateGroup, sortNotes } from './sorting.js';
+import { dateGroup, displayDateField, sortNotes } from './sorting.js';
 
 const notes = [
   { id: 'a', title: 'banana', pinned: false, updated_at: '2026-10-20T10:00:00Z', created_at: '2026-01-01T00:00:00Z' },
@@ -15,6 +15,17 @@ test('sortNotes keeps pinned first and sorts by the chosen field', () => {
   assert.equal(ids(sortNotes(notes, 'updated')), 'cbaed');
   assert.equal(ids(sortNotes(notes, 'created')), 'cdeba');
   assert.equal(ids(sortNotes(notes, 'title')), 'cbaed');
+});
+
+test('title and edited sorts display the edit timestamp, and created sort displays the creation timestamp', () => {
+  const note = {
+    title: '2020-01-01',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-10-20T10:00:00Z',
+  };
+  assert.equal(note[displayDateField('title')], note.updated_at);
+  assert.equal(note[displayDateField('updated')], note.updated_at);
+  assert.equal(note[displayDateField('created')], note.created_at);
 });
 
 test('dateGroup buckets like Apple Notes', () => {
