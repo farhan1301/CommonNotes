@@ -108,17 +108,21 @@ export const toggleInline = ({ text, start, end }, kind) => {
 export const continueList = ({ text, start, end }) => {
   if (start !== end) return null;
   const lineStart = text.lastIndexOf('\n', start - 1) + 1;
-  const line = text.slice(lineStart, start);
-  const match = /^(\s*)(?:([-*+])|(\d+)([.)]))\s+(\[[ xX]\]\s+)?/.exec(line);
+  const beforeCaret = text.slice(lineStart, start);
+  const isEmptyItem = (prefix) => {
+    const lineEnd = text.indexOf('\n', start);
+    return !text.slice(lineStart + prefix.length, lineEnd === -1 ? text.length : lineEnd).trim();
+  };
+  const match = /^(\s*)(?:([-*+])|(\d+)([.)]))\s+(\[[ xX]\]\s+)?/.exec(beforeCaret);
   if (!match) {
-    const quote = /^>\s?/.exec(line);
+    const quote = /^>\s?/.exec(beforeCaret);
     if (!quote) return null;
-    if (!line.slice(quote[0].length).trim()) return { from: lineStart, to: start, insert: '', start: lineStart, end: lineStart };
+    if (isEmptyItem(quote[0])) return { from: lineStart, to: start, insert: '', start: lineStart, end: lineStart };
     const insert = '\n> ';
     return { from: start, to: end, insert, start: start + insert.length, end: start + insert.length };
   }
   const [prefix, indent, bullet, num, delim, box] = match;
-  if (!line.slice(prefix.length).trim()) {
+  if (isEmptyItem(prefix)) {
     // Empty item: end the list (outdent first if indented). Leave a blank
     // line after the list, or Markdown would join the next text to it.
     const prevStart = text.lastIndexOf('\n', lineStart - 2) + 1;

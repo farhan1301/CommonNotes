@@ -74,6 +74,18 @@ test('continueList continues and ends lists', () => {
   assert.equal(run('«- a»', continueList), null);
 });
 
+test('Enter before the first word splits a nonempty item and preserves its text', () => {
+  assert.equal(run('- |milk', continueList), '- \n- |milk');
+  assert.equal(run('9. |item\nnext', continueList), '9. \n10. |item\nnext');
+  assert.equal(run('  - [x] |task', continueList), '  - [x] \n  - [ ] |task');
+  assert.equal(run('> |quote', continueList), '> \n> |quote');
+});
+
+test('Enter on an empty item still exits with text on the following line', () => {
+  assert.equal(run('- |\nplain', continueList), '|\nplain');
+  assert.equal(run('> |\nplain', continueList), '|\nplain');
+});
+
 test('indentLines only acts on list lines', () => {
   assert.equal(run('- a|', indentLines), '  - a|');
   assert.equal(run('  - a|', indentLines, true), '- a|');
