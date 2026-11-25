@@ -36,9 +36,12 @@ export const blockOf = (line) => {
   return 'body';
 };
 
+/** Character offset where the line holding `pos` starts. */
+const lineStartOf = (text, pos) => (pos > 0 ? text.lastIndexOf('\n', pos - 1) + 1 : 0);
+
 /** Start and end offsets of the lines the selection touches. */
 const lineRange = (text, start, end) => {
-  const from = text.lastIndexOf('\n', start - 1) + 1;
+  const from = lineStartOf(text, start);
   // A selection ending right after a newline does not include the next line.
   const stop = end > start && text[end - 1] === '\n' ? end - 1 : end;
   const next = text.indexOf('\n', stop);
@@ -107,7 +110,7 @@ export const toggleInline = ({ text, start, end }, kind) => {
  */
 export const continueList = ({ text, start, end }) => {
   if (start !== end) return null;
-  const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+  const lineStart = lineStartOf(text, start);
   const beforeCaret = text.slice(lineStart, start);
   const isEmptyItem = (prefix) => {
     const lineEnd = text.indexOf('\n', start);
@@ -125,7 +128,7 @@ export const continueList = ({ text, start, end }) => {
   if (isEmptyItem(prefix)) {
     // Empty item: end the list (outdent first if indented). Leave a blank
     // line after the list, or Markdown would join the next text to it.
-    const prevStart = text.lastIndexOf('\n', lineStart - 2) + 1;
+    const prevStart = lineStartOf(text, lineStart - 1);
     const afterList = lineStart > 0 && blockOf(text.slice(prevStart, lineStart - 1)) !== 'body';
     const replacement = indent.length >= 2 ? `${indent.slice(2)}${prefix.slice(indent.length)}` : afterList ? '\n' : '';
     return { from: lineStart, to: start, insert: replacement, start: lineStart + replacement.length, end: lineStart + replacement.length };
