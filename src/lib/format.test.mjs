@@ -52,6 +52,18 @@ test('setBlock converts, keeps the cursor on the text, and toggles off', () => {
   assert.equal(run('# ti|tle', setBlock, 'body'), 'ti|tle');
 });
 
+test('setBlock, continueList and indentLines handle a leading blank line at offset 0', () => {
+  assert.deepEqual(setBlock(state('|\nhello'), 'heading'), { from: 0, to: 0, insert: '## ', start: 3, end: 3 });
+  assert.equal(run('|\nhello', setBlock, 'heading'), '## |\nhello');
+  assert.equal(run('|\nhello', setBlock, 'check'), '- [ ] |\nhello');
+  assert.equal(run('«\n»hello', setBlock, 'bullet'), '«- »\nhello');
+  assert.equal(run('«\nhello»', setBlock, 'bullet'), '«\n- hello»');
+  assert.equal(run('«\n- a»', indentLines), '  «\n  - a»');
+  assert.equal(run('|\n- item', continueList), null);
+  assert.equal(run('\n- |', continueList), '\n|');
+  assert.equal(currentBlock(state('|\n## heading')), 'body');
+});
+
 test('toggleInline wraps, unwraps and inserts', () => {
   assert.equal(run('say «hi» now', toggleInline, 'bold'), 'say **«hi»** now');
   assert.equal(run('say **«hi»** now', toggleInline, 'bold'), 'say «hi» now');
