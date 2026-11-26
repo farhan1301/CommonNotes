@@ -84,24 +84,26 @@ export const setBlock = ({ text, start, end }, kind) => {
 
 const INLINE = { bold: '**', italic: '_', strike: '~~' };
 
-/** Wraps the selection in bold / italic / strikethrough, or unwraps it. */
+/** Toggles bold / italic / strikethrough, leaving surrounding whitespace alone. */
 export const toggleInline = ({ text, start, end }, kind) => {
   const mark = INLINE[kind];
   const m = mark.length;
+  const selected = text.slice(start, end);
+  const trimmed = selected.trim();
+  if (start !== end && !trimmed) return null;
+  const from = start + (selected.length - selected.trimStart().length);
+  const to = from + trimmed.length;
+
   // Already wrapped just outside the selection: unwrap.
-  if (text.slice(start - m, start) === mark && text.slice(end, end + m) === mark) {
-    return { from: start - m, to: end + m, insert: text.slice(start, end), start: start - m, end: end - m };
+  if (text.slice(from - m, from) === mark && text.slice(to, to + m) === mark) {
+    return { from: from - m, to: to + m, insert: trimmed, start: from - m, end: to - m };
   }
   // The selection itself includes the markers: unwrap.
-  const selected = text.slice(start, end);
-  if (selected.length >= 2 * m && selected.startsWith(mark) && selected.endsWith(mark)) {
-    const inner = selected.slice(m, -m);
-    return { from: start, to: end, insert: inner, start, end: start + inner.length };
+  if (trimmed.length >= 2 * m && trimmed.startsWith(mark) && trimmed.endsWith(mark)) {
+    const inner = trimmed.slice(m, -m);
+    return { from, to, insert: inner, start: from, end: from + inner.length };
   }
-  if (start === end) {
-    return { from: start, to: end, insert: mark + mark, start: start + m, end: start + m };
-  }
-  return { from: start, to: end, insert: mark + selected + mark, start: start + m, end: end + m };
+  return { from, to, insert: mark + trimmed + mark, start: from + m, end: to + m };
 };
 
 /**

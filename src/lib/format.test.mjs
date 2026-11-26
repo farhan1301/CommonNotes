@@ -72,6 +72,14 @@ test('toggleInline wraps, unwraps and inserts', () => {
   assert.equal(run('«done»', toggleInline, 'strike'), '~~«done»~~');
 });
 
+test('toggleInline leaves surrounding whitespace outside the markers', () => {
+  assert.equal(run('say« hello »again', toggleInline, 'bold'), 'say **«hello»** again');
+  assert.equal(run('« hello» again', toggleInline, 'italic'), ' _«hello»_ again');
+  assert.equal(run('«done »now', toggleInline, 'strike'), '~~«done»~~ now');
+  assert.equal(run('say« **hello** »again', toggleInline, 'bold'), 'say «hello» again');
+  assert.equal(run('**one**« »**two**', toggleInline, 'bold'), null);
+});
+
 test('continueList continues and ends lists', () => {
   assert.equal(run('- milk|', continueList), '- milk\n- |');
   assert.equal(run('- [x] milk|', continueList), '- [x] milk\n- [ ] |');
