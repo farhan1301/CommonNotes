@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotebookPen, SquarePen, X } from 'lucide-react';
 import { supabase, notesApi, isNetworkError, NOTE_META } from '../lib/supabase';
-import { allDrafts, isEmptyDraft, removeDraft } from '../lib/drafts';
+import { allDrafts, draftListRow, isEmptyDraft, removeDraft } from '../lib/drafts';
 import { subscribe, syncNow } from '../lib/sync';
 import { flattenTree, folderPath, notesInFolder } from '../lib/folders';
 import { DEFAULT_SORT, SORTS, sortNotes } from '../lib/sorting';
@@ -54,17 +54,7 @@ function ResizeHandle({ width, onResize, onReset }) {
 /** Unsaved notes that only exist as drafts on this device. */
 const draftOnlyNotes = (known) => Object.values(allDrafts())
   .filter((d) => d.baseVersion == null && !isEmptyDraft(d) && !known.has(d.id))
-  .map((d) => ({
-    id: d.id,
-    folder_id: d.folder_id,
-    title: d.title.trim() || d.content.trim().split('\n')[0].replace(/^#+\s*/, '').slice(0, 80),
-    preview: d.content.replace(/\s+/g, ' ').slice(0, 200),
-    tags: [],
-    pinned: false,
-    updated_at: new Date(d.updatedAt).toISOString(),
-    deleted_at: null,
-    last_edited_by: 'you',
-  }));
+  .map(draftListRow);
 
 export default function NotesApp() {
   const dialog = useDialog();

@@ -7,7 +7,8 @@
  * every keystroke; sync.js sends drafts to Supabase and removes them once
  * saved, so nothing typed is lost when the connection drops.
  */
-import { load, save } from './storage';
+import { load, save } from './storage.js';
+import { autoTitle, withoutImages } from './markdown.js';
 
 const KEY = 'commonnotes:drafts';
 
@@ -52,3 +53,20 @@ export const removeDraft = (id, ifUpdatedAt) => {
 };
 
 export const isEmptyDraft = (draft) => !draft.title?.trim() && !draft.content?.trim();
+
+/**
+ * How a draft of a note the server has never seen shows in the note list.
+ * The title and preview follow the database's rules (autoTitle, images as
+ * their alt text), so the row doesn't change once the note is saved.
+ */
+export const draftListRow = (draft) => ({
+  id: draft.id,
+  folder_id: draft.folder_id,
+  title: draft.title.trim() || autoTitle(draft.content),
+  preview: withoutImages(draft.content).replace(/\s+/g, ' ').trim().slice(0, 200),
+  tags: [],
+  pinned: false,
+  updated_at: new Date(draft.updatedAt).toISOString(),
+  deleted_at: null,
+  last_edited_by: 'you',
+});

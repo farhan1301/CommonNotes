@@ -7,7 +7,7 @@ export const folderPath = (folders, id) => {
     parts.unshift(current.name);
     current = byId.get(current.parent_id);
   }
-  return id ? parts.join('/') : 'Inbox';
+  return id && parts.length > 0 ? parts.join('/') : 'Inbox';
 };
 
 /** Depth-first list of { folder, depth, path }, siblings sorted by name. */
