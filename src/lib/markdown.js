@@ -20,6 +20,17 @@ export const splitHighlights = (snippet = '') =>
 /** Images ("![alt](url)") reduced to their alt text, as titles, previews and search see them. */
 export const withoutImages = (text = '') => text.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1');
 
+/** Adds the explicit note title unless it is already the opening H1. */
+export const markdownForDownload = (title, content) => {
+  const name = title.trim();
+  if (!name) return content;
+
+  const firstLine = content.split(/\r\n?|\n/).find((line) => line.trim()) || '';
+  const heading = /^ {0,3}#([ \t]+.*)$/.exec(firstLine);
+  if (heading && heading[1].replace(/[ \t]+#+[ \t]*$/, '').trim() === name) return content;
+  return `# ${title}\n\n${content}`;
+};
+
 /** Storage bucket for images added to notes (private: owner only). */
 export const IMAGE_BUCKET = 'note-images';
 

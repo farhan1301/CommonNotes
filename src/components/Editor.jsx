@@ -7,7 +7,7 @@ import { supabase, isNetworkError, NOTE_META } from '../lib/supabase';
 import { getDraft, putDraft, removeDraft } from '../lib/drafts';
 import { getStatus, discardMine, keepMine, subscribe, syncNow } from '../lib/sync';
 import { flattenTree } from '../lib/folders';
-import { autoTitle, insertBlock, toggleTaskLine } from '../lib/markdown';
+import { autoTitle, insertBlock, markdownForDownload, toggleTaskLine } from '../lib/markdown';
 import { isImageFile, purgeImages, uploadImage } from '../lib/images';
 import { continueList, currentBlock, indentLines, lineOffset, setBlock, toggleInline } from '../lib/format';
 import { blockForLine, caretViewportY, firstVisibleBlock, revealCaret, scrollCaretTo, sourceOffsetFromClick } from '../lib/caret';
@@ -430,7 +430,7 @@ export default function Editor({
   const shownTitle = title.trim() || autoTitle(content);
 
   const download = () => {
-    const body = content.trimStart().startsWith('#') || !title.trim() ? content : `# ${title}\n\n${content}`;
+    const body = markdownForDownload(title, content);
     const blob = new Blob([body], { type: 'text/markdown' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);

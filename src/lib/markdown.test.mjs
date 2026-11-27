@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { splitHighlights, toggleTaskLine } from './markdown.js';
+import { markdownForDownload, splitHighlights, toggleTaskLine } from './markdown.js';
 import { flattenTree, folderPath, subtreeIds } from './folders.js';
 
 test('toggleTaskLine ticks and unticks only task lines', () => {
@@ -23,6 +23,18 @@ test('splitHighlights marks **bold** parts', () => {
   assert.deepEqual(splitHighlights('buy **milk** now'), [
     { text: 'buy ', bold: false }, { text: 'milk', bold: true }, { text: ' now', bold: false },
   ]);
+});
+
+test('Markdown downloads keep the explicit title when the body starts with other text', () => {
+  for (const content of ['## Supplies\n- Paper', '# Agenda\n- Review', '#planning', '    # Workshop']) {
+    assert.equal(markdownForDownload('Workshop', content), `# Workshop\n\n${content}`);
+  }
+});
+
+test('Markdown downloads preserve the body for untitled notes or a matching opening heading', () => {
+  const content = '\r\n  # Workshop ##\r\n\r\n## Supplies';
+  assert.equal(markdownForDownload(' Workshop ', content), content);
+  assert.equal(markdownForDownload('   ', '## Supplies\n- Paper'), '## Supplies\n- Paper');
 });
 
 test('folder tree helpers', () => {
